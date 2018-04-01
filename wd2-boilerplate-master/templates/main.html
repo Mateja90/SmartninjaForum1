@@ -1,0 +1,39 @@
+{% extends "base.html"%}
+
+{%block title%}Main page{%endblock%}
+{% block content %}
+ <div class="jumbotron">
+     <h1>Ninja tech forum</h1>
+     <p>Welcome to Ninja Tech Forum - the best forum for tech fans. Coming soon!</p>
+ </div>
+<!--{%if  name%}
+<p>Hello, {{name}}!</p>
+{% else%}
+ <form action="/" method="get">
+
+   Name: <input type="text" name="username"/><br />
+   <input type="submit" value="Send" />
+
+ </form>
+ {%endif%}-->
+
+
+<table class="table table-bordered">
+  <thead>
+  <tr>
+    <td><strong>Topic title</strong></td>
+    <td><strong>Author</strong></td>
+  </tr>
+</thead>
+
+ {% for c in topics%}
+<tbody>
+ <tr>
+    <td><a href="/topic/{{ c.key.id() }}">{{c.title}}</a></td>
+    <td>{{c.author_email}}</td>
+  </tr>
+
+ {% endfor %}
+</tbody>
+  </table>
+{% endblock content %}
