@@ -13,9 +13,18 @@
 </div>
 <br />
 <hr />
+
+<div class = "row">
+  {% for comment in comments %}
+  <h3 class="panel-title">{{comment.author_email}} on {{comment.created.strftime("%d.%m.%Y at %H:%M")}}</h3>
+  <br />
+  <p>{{comment.content}}</p>
+  {% endfor %}
+</div>
+
 <div class="row">
   <form action="/topic/{{topic.key.id()}}/comment/add" method = "post">
-    <input type="hidden" name="csrf_token" value="{{token}}" />
+    <input type="hidden" name="csrf_token" value="{{csrf_token}}" />
      <div class="form-group">
     <label>Comment</label>
     <textarea type="text" class="form-control" rows="6" name="commenttext" required></textarea>

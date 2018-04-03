@@ -8,7 +8,8 @@ class TopicHandler(BaseHandler):
     def get(self):
         csrf_token =str(uuid.uuid4())
         user=users.get_current_user()
-        memcache.add(key=user.email(), value=csrf_token, time=600)
+        memcache.delete(key=user.email())
+        memcache.add(key=csrf_token, value=user.email(), time=600)
 
         params = {"token": csrf_token}
         return self.render_template("topic_add.html", params=params)
@@ -16,11 +17,11 @@ class TopicHandler(BaseHandler):
     def post(self):
         user = users.get_current_user()
         csrf_token = self.request.get("csrf_token")
-        token = memcache.get(key=user.email())
+        token = memcache.get(key=csrf_token)
         if not user:
             return self.write("You have to login before you can post a topic!")
 
-        if token != csrf_token:
+        if token != user.email():
             return self.write("You are hacker!")
         title = self.request.get("title")
         content = self.request.get("text")
@@ -34,8 +35,9 @@ class TopicDetailHandler(BaseHandler):
     def get(self, topic_id):
         user=users.get_current_user()
         topic = Topic.get_by_id(int(topic_id))
-        comment=Comment.query(Comment.topic_id==topic.key.id(), Comment.deleted==False).order(Comment.created).fetch()
+        comments=Comment.query(Comment.topic_id==topic.key.id(), Comment.deleted==False).order(Comment.created).fetch()
         csrf_token=str(uuid.uuid4())
+        memcache.delete(key=user.email())
         memcache.add(key=user.email(), value=csrf_token, time=600)
-        params={"topic": topic, "comments": comment, "csrf_token": csrf_token}
+        params={"topic": topic, "comments": comments, "csrf_token": csrf_token}
         return self.render_template("topic_details.html", params=params)
